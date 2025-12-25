@@ -169,8 +169,8 @@ export function WheelChart({
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'bottom';
 
-                const x = (chartArea.left + chartArea.right) / 2;
-                const y = chartArea.bottom + 16;
+                const x = chartArea.right;
+                const y = chartArea.top - 8;
 
                 ctx.fillText(label, x, y);
                 ctx.restore();
