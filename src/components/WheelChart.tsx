@@ -91,6 +91,11 @@ export function WheelChart({
         () => ({
             responsive: true,
             maintainAspectRatio: false as const,
+            layout: {
+                padding: {
+                    top: 24,
+                },
+            },
             plugins: {
                 legend: {
                     position: 'bottom' as const,

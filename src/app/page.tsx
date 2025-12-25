@@ -168,6 +168,7 @@ export default function Home() {
   >(null);
   const [isSaving, setIsSaving] = useState(false);
   const [exportUrl, setExportUrl] = useState<string | null>(null);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     const stored = loadAssessments();
@@ -427,11 +428,25 @@ export default function Home() {
               </button>
             </div>
 
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+              <label className="text-[11px] text-slate-400 sm:w-40">
+                Your name (for downloads)
+              </label>
+              <input
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                placeholder="Optional"
+                className="flex-1 rounded-lg border border-slate-700/80 bg-slate-950/60 px-3 py-1.5 text-xs text-slate-100 placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/70"
+              />
+            </div>
+
             <WheelChart
               categories={currentCategoriesLabels}
               currentScores={scores}
               comparison={comparisonSnapshot}
               onExport={handleExport}
+              userName={userName || undefined}
             />
 
             {exportUrl && (
