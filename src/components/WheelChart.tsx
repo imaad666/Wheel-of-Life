@@ -9,6 +9,7 @@ import {
     Tooltip,
     Legend,
     type TooltipItem,
+    type Plugin,
 } from 'chart.js';
 import { Radar } from 'react-chartjs-2';
 import { useMemo, useRef, type ReactElement } from 'react';
@@ -34,6 +35,7 @@ type WheelChartProps = {
     currentScores: Record<string, number>;
     comparison?: AssessmentSnapshot | null;
     onExport?: (dataUrl: string) => void;
+    userName?: string;
 };
 
 export function WheelChart({
@@ -41,6 +43,7 @@ export function WheelChart({
     currentScores,
     comparison,
     onExport,
+    userName,
 }: WheelChartProps): ReactElement {
     const chartRef = useRef<ChartJS<'radar'> | null>(null);
 
@@ -135,6 +138,42 @@ export function WheelChart({
         [],
     );
 
+    const exportInfoPlugin = useMemo<Plugin<'radar'>>(
+        () => ({
+            id: 'exportInfo',
+            afterDraw: (chart) => {
+                const { ctx, chartArea } = chart;
+                if (!ctx || !chartArea) return;
+
+                const trimmedName = userName?.trim();
+                const now = new Date();
+                const dateString = now.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: '2-digit',
+                });
+
+                const label = trimmedName
+                    ? `${trimmedName} · ${dateString}`
+                    : dateString;
+
+                ctx.save();
+                ctx.font =
+                    '12px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                ctx.fillStyle = '#0f172a';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+
+                const x = (chartArea.left + chartArea.right) / 2;
+                const y = chartArea.bottom + 16;
+
+                ctx.fillText(label, x, y);
+                ctx.restore();
+            },
+        }),
+        [userName],
+    );
+
     const handleExport = () => {
         if (!onExport || !chartRef.current) return;
         const chart = chartRef.current;
@@ -147,7 +186,12 @@ export function WheelChart({
     return (
         <div className="flex h-full flex-col gap-4">
             <div className="relative h-80 w-full rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur">
-                <Radar ref={chartRef} data={data} options={options} />
+                <Radar
+                    ref={chartRef}
+                    data={data}
+                    options={options}
+                    plugins={[exportInfoPlugin]}
+                />
             </div>
             {onExport && (
                 <div className="flex justify-end">
