@@ -121,6 +121,7 @@ function generateInsights(
         'Rate each area from 0–10 to see how balanced your current Wheel of Life feels.',
       highlights: [] as string[],
       actions: [] as string[],
+      average: 0,
     };
   }
 
@@ -147,7 +148,7 @@ function generateInsights(
     actions.push(suggestForCategory(cat.id, cat.label));
   });
 
-  return { summary, highlights, actions };
+  return { summary, highlights, actions, average: avg };
 }
 
 export default function Home() {
@@ -169,6 +170,10 @@ export default function Home() {
   const [isSaving, setIsSaving] = useState(false);
   const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [userName, setUserName] = useState('');
+  const [lastExportMeta, setLastExportMeta] = useState<{
+    name?: string;
+    exportedAt: string;
+  } | null>(null);
 
   useEffect(() => {
     const stored = loadAssessments();
@@ -205,6 +210,13 @@ export default function Home() {
     () => generateInsights(categories, scores),
     [categories, scores],
   );
+
+  const trimmedUserName = userName.trim();
+  const wheelTitle = trimmedUserName
+    ? `${trimmedUserName}${
+        trimmedUserName.endsWith('s') ? "'" : "'s"
+      } Wheel of Life`
+    : 'Your Wheel of Life';
 
   const handleScoreChange = (label: string, value: number) => {
     setScores((prev) => ({ ...prev, [label]: value }));
@@ -272,6 +284,18 @@ export default function Home() {
 
   const handleExport = (dataUrl: string) => {
     setExportUrl(dataUrl);
+    const now = new Date();
+    const exportedAt = now.toLocaleString([], {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    setLastExportMeta({
+      name: trimmedUserName || undefined,
+      exportedAt,
+    });
     const link = document.createElement('a');
     link.href = dataUrl;
     link.download = 'wheel-of-life.png';
@@ -411,12 +435,19 @@ export default function Home() {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-semibold text-slate-100">
-                  Your Wheel of Life
+                  {wheelTitle}
                 </h2>
                 <p className="text-[11px] text-slate-400">
                   A radar chart of your current scores. Aim for a shape that
                   feels steady and balanced.
                 </p>
+                <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-800/80 px-3 py-1 text-[11px] text-slate-100">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  <span className="font-medium">
+                    Average score: {insights.average.toFixed(1)}/10
+                  </span>
+                  <span className="text-slate-400">Balance snapshot</span>
+                </div>
               </div>
               <button
                 type="button"
@@ -450,9 +481,26 @@ export default function Home() {
             />
 
             {exportUrl && (
-              <p className="mt-1 text-[10px] text-slate-500">
-                Chart downloaded as <span className="font-mono">PNG</span>.
-              </p>
+              <div className="mt-2 space-y-1 text-[10px] text-slate-500">
+                <p>
+                  Chart downloaded as <span className="font-mono">PNG</span>.
+                </p>
+                {lastExportMeta && (
+                  <p>
+                    {lastExportMeta.name ? (
+                      <>
+                        This snapshot is for{' '}
+                        <span className="font-semibold text-slate-300">
+                          {lastExportMeta.name}
+                        </span>{' '}
+                        · {lastExportMeta.exportedAt}
+                      </>
+                    ) : (
+                      <>This snapshot was downloaded on {lastExportMeta.exportedAt}.</>
+                    )}
+                  </p>
+                )}
+              </div>
             )}
           </div>
 
