@@ -199,7 +199,7 @@ export function WheelChart({
                 />
             </div>
             {onExport && (
-                <div className="flex justify-end">
+                <div className="flex flex-col items-end gap-1">
                     <button
                         type="button"
                         onClick={handleExport}
@@ -207,6 +207,10 @@ export function WheelChart({
                     >
                         <span>Download chart</span>
                     </button>
+                    <p className="max-w-xs text-right text-[10px] text-slate-500">
+                        Tip: Download this and bring it to your next reflection, coaching
+                        session, or check-in.
+                    </p>
                 </div>
             )}
         </div>
