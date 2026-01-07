@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { WheelChart, type AssessmentSnapshot } from '@/components/WheelChart';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 type Category = {
   id: string;
@@ -309,17 +310,22 @@ export default function Home() {
       <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row">
         <section className="w-full space-y-6 lg:w-1/2">
           <header className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-300/80">
-              Wheel of Life
-            </p>
-            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              See your life at a glance.
-            </h1>
-            <p className="max-w-xl text-sm text-slate-300">
-              Rate each area from 0–10 to create your personal Wheel of Life.
-              The chart highlights balance, gaps, and where a small change
-              could have the biggest impact.
-            </p>
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-300/80">
+                  Wheel of Life
+                </p>
+                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                  See your life at a glance.
+                </h1>
+                <p className="max-w-xl text-sm text-slate-300">
+                  Rate each area from 0–10 to create your personal Wheel of
+                  Life. The chart highlights balance, gaps, and where a small
+                  change could have the biggest impact.
+                </p>
+              </div>
+              <ThemeToggle />
+            </div>
           </header>
 
           <div className="space-y-4 rounded-2xl bg-slate-900/70 p-4 ring-1 ring-slate-800/80 shadow-lg shadow-slate-950/40">
